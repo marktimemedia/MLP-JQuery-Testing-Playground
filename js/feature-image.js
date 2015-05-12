@@ -5,7 +5,6 @@
 	function setHeight() {
 		var windowHeight = $(window).innerHeight() - 140;
 		$('#sample-feature-home').css('height', windowHeight);
-		console.log(windowHeight);
 	}
 
 	$(document).ready(function(){

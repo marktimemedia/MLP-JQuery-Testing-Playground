@@ -26,7 +26,7 @@
 
 		$('.gallery_image').each(function(i){
 			$(this).addClass("img-row-" + ((i%imgPerRow)+1)); // add descriptive class
-		  });
+		});
 
 	}
 
@@ -42,11 +42,11 @@
 		}
 
 		for(var i = 0; i < rowImgs.length; i+=imgPerRow) { // create the wrapper div based on images per row
-			// console.log('expected images per row ' + imgPerRow);
+			console.log('expected images per row ' + imgPerRow);
 			rowImgs.slice(i, i+imgPerRow).wrapAll('<div class="gallery_dynamic_row"></div>'); 
 		}
 
-		$('.gallery_dynamic_row').each(function(i){ // add data-row attribute
+		$('.gallery_dynamic_row').each(function(i){ // add data-row attribute to specify row number
 			$(this).attr('data-row', (i+1));
 		});
 
@@ -65,6 +65,7 @@
 
 	calcImgsInRow();
 	wrapperRow();
+	
 	$(window).resize(function(){
 		calcImgsInRow();
 		wrapperRow();

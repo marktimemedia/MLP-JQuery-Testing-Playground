@@ -6,6 +6,7 @@ This is where I'm teaching myself jQuery with stuff I'm going to actually use on
 Are these the best code snippets evar? Probably not, I'm teaching myself. Can someone else learn something from them and/or find a better way? Sure! Which is why they're on GitHub
 
 Here's what it contains so far:
+* **100% height slider**: resizes to fit the window, with text at the bottom
 * **Hidden Searchbar**: expands on button click, collapses when you click outside the box
 * **Fixed Position Header**:
   - desktop mode, shrinks on scrolldown and expands again when you get to the top

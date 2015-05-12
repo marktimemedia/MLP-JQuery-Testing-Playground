@@ -168,6 +168,8 @@ section.gallery {
 		box-sizing:border-box;
 		max-width:1200px;
 		margin:0 auto;
+		font-size:0.9em;
+		line-height:1.2;
 	}
 
 	.home_text .home_text_content a {
@@ -201,6 +203,7 @@ section.gallery {
 .flexslider .slides {
 	zoom:1;
 	height:100%;
+	margin-top:-80px;
 }
 
 
@@ -217,7 +220,7 @@ section.gallery {
 
 }
 	.article_image {
-		width:25%;
+		width:100%;
 		display:inline-block;
 		vertical-align:top;
 	}
@@ -227,7 +230,7 @@ section.gallery {
 		}
 
 	.article_text {
-		width:74%;
+		width:100%;
 		display:inline-block;
 		vertical-align:top;
 	}
@@ -409,6 +412,23 @@ section.gallery {
 		right:5%;
 		top:-50px;
 		font-size:30px;
+	}
+
+	.flexslider .slides {
+		margin-top:-20px;
+	}
+
+	.home_text_content {
+		font-size:1em;
+		line-height:1.4;
+	}
+
+	.article_image {
+		width:25%;
+	}
+
+	.article_text {
+		width:74%;
 	}
 }
 

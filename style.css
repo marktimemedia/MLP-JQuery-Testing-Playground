@@ -1,5 +1,10 @@
 /* Global */
 
+@font-face {
+    font-family: Equestria-Web;
+    src: url(fonts/Equestria2.ttf.woff);
+}
+
 body {
 	padding:0;
 	margin:0;
@@ -27,7 +32,7 @@ a {
 	}
 
 h1, h2, h3, h4, h5, h6 {
-	font-family:"Equestria", "HoboStd", "Comic Sans MS";
+	font-family:"Equestria-Web", "HoboStd", "Comic Sans MS";
 	color:#de1e7e;
 	margin:0;
 }

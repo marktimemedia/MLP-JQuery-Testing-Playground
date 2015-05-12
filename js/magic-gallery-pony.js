@@ -1,86 +1,5 @@
 (function($){
 
-/* Expanding Search Bar */
-
-	function switchToggle() {
-		var bodyWrap = $('#site-wrapper'); // body
-		var headerWrap = $('.site_title'); // only because header is outside of site wrap
-		var searchToggle = $('.sample_search_toggle'); // button
-		var searchBar = $('#sample-searchbar'); // search
-
-	    $(document).on('click', '.run_toggle', function(){ // if toggle is closed, click button or to open
-	    	bodyWrap.addClass('search_open');
-	    	headerWrap.addClass('search_open');
-	    	searchToggle.removeClass('run_toggle');
-	    	searchBar.addClass('search_expanded');
-	    });
-
-	    $(document).on('click', '.search_open', function(){ // if toggle is open, close by clicking anywhere on the body
-	    	bodyWrap.removeClass('search_open');
-	    	headerWrap.removeClass('search_open');
-	    	searchToggle.addClass('run_toggle');
-	    	searchBar.removeClass('search_expanded');
-	    });
-   }
-
-	switchToggle();
-
-
-
-/* Scroll Header */
-
-	var lastScrollTop = $(window).scrollTop(); // reset variable any time it reloads
-	var siteHeader = $('.site_header');
-	var siteTitle = $('.site_title');
-	var contentTop = $('#site-wrapper');
-
-	$(window).on('scroll', (function(event) {
-		var scrollPosition = $(this).scrollTop();
-
-		if($(window).width() > 488 ) { // we're mobile first so this is anything larger than our mobile breakpoint
-
-			if (scrollPosition > 180) { // once you get far enough down, shrink the header
-		    	
-		        siteTitle.addClass('site_title_small'); 
-
-		    } else { // bring it back up again when we get back to the top
-
-		    	siteTitle.removeClass('site_title_small');
-		    }
-
-		} else { // this is mobile breakpoint or smaller
-
-			if (scrollPosition > 50 && scrollPosition > lastScrollTop) { // once you get far enough down, hide the header
-		    	
-		        siteTitle.addClass('site_title_small'); 
-
-		    } else { // bring it back up again if we scroll up at all
-
-		    	siteTitle.removeClass('site_title_small');
-		    }
-
-		    lastScrollTop = scrollPosition;
-
-		}
-
-	}));
-
-
-
-/* Read More - Articles */
-
-	$('.read_more').on('click', function() {
-		if(!$(this).hasClass('read_less')){
-			$(this).addClass('read_less').html
-			$(this).html('Read Less');
-		} else {
-			$(this).removeClass('read_less');
-			$(this).html('Read More');
-		}
-		$(this).parent().siblings('.article_more').slideToggle();
-	});
-
-
 /* Magic Gallery Divs */
 
 	var imgPerRow;
@@ -95,7 +14,7 @@
 
 		 	if($(this).prev().length > 0){
 
-		 		if($(this).position().top != $(this).prev().position().top) { // if this image is not next to previous image
+		 		if($(this).position().top !== $(this).prev().position().top) { // if this image is not next to previous image
 		 			return false;
 		 		}
 		 		imgPerRow++;  
@@ -111,10 +30,12 @@
 
 	}
 
+	var rowImgs = $('.gallery_image');
+	var tempRow = $('.gallery_dynamic_row');
+	var expandedExists = $('.expanded_gallery_single');
+
 	// add the wrapper div for dynamic rows
 	function wrapperRow() {
-		var rowImgs = $('.gallery_image');
-		var tempRow = $('.gallery_dynamic_row');
 
 		if (tempRow.length > 0) { // get rid of wrapper if it exists
 			$('.gallery_image').unwrap();
@@ -136,6 +57,7 @@
 		var expandedExists = $('.expanded_gallery_single');
 
 		if(expandedExists.length > 0) {
+			// console.log('remove the div');
 			expandedExists.remove();
 		}
 	}

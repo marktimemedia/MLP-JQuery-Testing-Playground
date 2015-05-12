@@ -1,8 +1,13 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title>JS Test Site</title>
+	<link rel="stylesheet" type="text/css" href="flexslider.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<script src="jquery-1.11.3.min.js"></script>
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<script src="js/jquery.flexslider-min.js"></script>
+	<script src="js/flexslider-pony.js"></script>
+	<script src="js/feature-image.js"></script>
 </head>
 
 <body>
@@ -24,6 +29,25 @@
 </header>
 
 <div id="site-wrapper">
+
+	<div class="sample_feature_home" id="sample-feature-home">
+		<div class="flexslider feature_image">
+			<ul class="slides">
+				<li class="feature_image_single slide" style="background:url('images/pony-bg1.jpg') no-repeat; background-size:cover; background-position:50% 0%;">
+				</li>
+				<li class="feature_image_single slide" style="background:url('images/pony-bg2.jpg') no-repeat; background-size:cover; background-position:50% 0%;">
+				</li>
+			</ul>
+		</div>
+		<div class="home_text">
+			<div class="featured_image_caption">
+				I used to wonder what $(this) would be...
+			</div>
+			<div class="home_text_content">
+				The heaviest Static HTML site, but with Ponies! Scroll down to see thingies...
+			</div>
+		</div>
+	</div>
 
 	<div class="content_wrapper">
 
@@ -243,6 +267,9 @@
 	Ponyright &#9816; 2015. All Pony creations are property of ther respective owners.
 </footer>
 
-<script src="global.js"></script>
+<script src="js/search-pony.js"></script>
+<script src="js/scroll-pony.js"></script>
+<script src="js/articles-pony.js"></script>
+<script src="js/magic-gallery-pony.js"></script>
 </body>
 </html>

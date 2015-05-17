@@ -5,7 +5,11 @@
 	var imgPerRow;
 	var rowNumber;
 
-	// assign images to rows
+	var rowImgs = $('.gallery_image');
+	var tempRow = $('.gallery_dynamic_row');
+	var expandedExists = $('.expanded_gallery_single');
+
+// assign images to rows
 	function calcImgsInRow() {
 		 imgPerRow = 0; // number of images per row 
 		 rowNumber = 1; // which row we are on
@@ -14,7 +18,7 @@
 
 		 	if($(this).prev().length > 0){
 
-		 		if($(this).position().top !== $(this).prev().position().top) { // if this image is not next to previous image
+		 		if($(this).offset().top !== $(this).prev().offset().top) { // if this image is not next to previous image
 		 			return false;
 		 		}
 		 		imgPerRow++;  
@@ -28,13 +32,12 @@
 			$(this).addClass("img-row-" + ((i%imgPerRow)+1)); // add descriptive class
 		});
 
+		console.log('expected images per row ' + imgPerRow);
+
 	}
 
-	var rowImgs = $('.gallery_image');
-	var tempRow = $('.gallery_dynamic_row');
-	var expandedExists = $('.expanded_gallery_single');
 
-	// add the wrapper div for dynamic rows
+// add the wrapper div on click for dynamic rows
 	function wrapperRow() {
 
 		if (tempRow.length > 0) { // get rid of wrapper if it exists
@@ -42,7 +45,6 @@
 		}
 
 		for(var i = 0; i < rowImgs.length; i+=imgPerRow) { // create the wrapper div based on images per row
-			console.log('expected images per row ' + imgPerRow);
 			rowImgs.slice(i, i+imgPerRow).wrapAll('<div class="gallery_dynamic_row"></div>'); 
 		}
 
@@ -52,46 +54,92 @@
 
 	}
 
-	// remove expanded content on resize so it doesn't jump to the bottom, possibly change this later to dynamically move itself instead
+
+// unwrap on resize
+	function unWrapRow() { 
+		$('.gallery_image').unwrap();
+		$('.gallery_image').wrapAll('<div class="gallery_dynamic_row"></div>'); 
+
+	}
+
+
+//remove expanded content on resize so it doesn't jump to the bottom, possibly change this later to dynamically move itself instead
 	function contentOnResize() {
 		var expandedExists = $('.expanded_gallery_single');
 
 		if(expandedExists.length > 0) {
-			// console.log('remove the div');
+
 			expandedExists.remove();
 		}
 	}
 
 
+
+// run immediately
 	calcImgsInRow();
-	wrapperRow();
-	
-	$(window).resize(function(){
-		calcImgsInRow();
-		wrapperRow();
-		contentOnResize();
+
+
+
+	var oldWidth = 0;
+
+// run on window load
+	$(window).load(function(){ // get window width on load and save
+		oldWidth = $(window).width();
+		
+		console.log('starting width= ' + oldWidth);
 	});
 
-	// opening content on image click
+
+
+	var resizeTimer;
+
+// run on window resize	
+	$(window).on('resize', function(e){
+
+		clearTimeout(resizeTimer);
+		resizeTimer = setTimeout(function(){ 	// wait until we're done resizing to do these things
+
+			newWidth = $(window).width(); 		// get current window width
+
+			if(oldWidth != newWidth){ 			// only do these things if width has changed (not height)
+
+				calcImgsInRow(); 	// recalc images per row
+				contentOnResize(); 	// hide content
+				unWrapRow(); 		// kill wrapper and wrap all images together
+				
+				console.log('resized width=' + oldWidth + ' new width= '+ newWidth );
+			}
+
+			oldWidth = newWidth;
+
+		}, 250);
+
+	});
+
+
+// run on image click
 
 	var sampleRowNumberOld = 0; // original value for "old" row
 
 	$('.gallery_image').on('click', function() {
-		
-		var $fullContent = $(this).children('.gallery_full_content').html(); // content in DOM associated with current image
-		var $wrapperDiv = $(this).parent('.gallery_dynamic_row'); // current image wrapper row
-		var uid = $(this).data('uid'); // current image data-uid attr
-		var expandedUid = $('.expanded_gallery_single').data('uid'); // current expanded div data-uid attr
-		var sampleRowNumber = $wrapperDiv.data('row'); // current image wrapper row data-row attr
 
-		// clicked the same image twice (close)
+	// unwraps row and adds again on click
+		wrapperRow(); 
+		
+		var $fullContent = $(this).children('.gallery_full_content').html(); 	// content in DOM associated with current image
+		var $wrapperDiv = $(this).parent('.gallery_dynamic_row'); 				// current image wrapper row
+		var uid = $(this).data('uid'); 											// current image data-uid attr
+		var expandedUid = $('.expanded_gallery_single').data('uid'); 			// current expanded div data-uid attr
+		var sampleRowNumber = $wrapperDiv.data('row'); 							// current image wrapper row data-row attr
+
+	// clicked the same image twice (close)
 		if(uid === expandedUid) { // image data-uid is the same as expanded data-uid
 
 			// console.log('step 2, close and change uid');
 
 			$( '.expanded_gallery_single' ).removeClass( 'animate_show' ).data( 'uid', 0 ); // hide and reset data-uid to 0
 
-		// clicked a different image in same row (switch content)
+	// clicked a different image in same row (switch content)
 		} else if(0 < expandedUid && uid !== expandedUid && sampleRowNumber === sampleRowNumberOld) { // expanded data-uid has been set, and is not the same as current, and is in the same row
 			
 			// console.log('step 3, same row switch content');
@@ -100,7 +148,7 @@
 			$('.expanded_gallery_single').html($fullContent); // switch content
 			$( '.expanded_gallery_single' ).data( 'uid', uid ); // change data-uid to match current img
 
-		// clicked a different image in a new row (open)
+	// clicked a different image in a new row (open)
 		} else if( 0 < expandedUid && uid !== expandedUid && sampleRowNumber !== sampleRowNumberOld ) { // expanded data-uid has been set, and is not the same as current, and is in different row
 			
 			// console.log('step 4, remove, new row, open');
@@ -112,7 +160,7 @@
 			$('.expanded_gallery_single').addClass('animate_show');
 			sampleRowNumberOld = sampleRowNumber; // set old row number to current row number
 
-		// clicked the image (open)
+	// clicked the image (open)
 		} else { // expandedUid = 0 or undefined, or all other circumstances 
 			
 			// console.log('step 1, remove, add, and open');

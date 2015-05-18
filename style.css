@@ -10,7 +10,7 @@ body {
 	margin:0;
 	background-color:#eee;
 	font-family:"Trebuchet", Sans-Serif;
-	line-height:1.4em;
+	line-height:1.4;
 }
 
 main, header, section, article, article div, aside, footer {
@@ -354,7 +354,7 @@ section.gallery {
 }
 
 
-@media only screen and (min-width: 30.5em) { /* 488px */
+@media only screen and (min-width: 488px) { /* 488px */
 	
 
 	#site-wrapper {
@@ -394,7 +394,7 @@ section.gallery {
 
 }
 
-@media only screen and (min-width: 48.5em) {
+@media only screen and (min-width: 776px) {
 	.quartercol {
         width:30%;
         margin:1.5%;
@@ -419,7 +419,7 @@ section.gallery {
 	}
 
 	.home_text_content {
-		font-size:1em;
+		font-size:16px;
 		line-height:1.4;
 	}
 
@@ -432,7 +432,7 @@ section.gallery {
 	}
 }
 
-@media only screen and (min-width: 62.5em) {
+@media only screen and (min-width: 1000px) {
 	.quartercol {
         width:22%;
         margin:1.25%;

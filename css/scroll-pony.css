@@ -1,0 +1,49 @@
+.site_title {
+	height:90px;
+	padding:10px 20px 20px 20px;
+	transition: all 500ms ease-in;
+}
+
+.site_title h1 {
+	font-size:40px;
+	transition: all 300ms ease-in;
+}
+
+	.site_title_small {
+		height:0px;
+		padding:0 20px;
+		transition: all 500ms ease-out;
+	}
+
+	.site_title_small h1 {
+		font-size:20px;
+		transition: all 300ms ease-out;
+	}
+
+@media only screen and (min-width: 488px) { /* Mobile Breakpoint */
+
+	.site_title {
+		height:130px;
+		padding:40px 20px 30px 20px;
+		transition: all 300ms ease-in;
+
+	}
+
+	.site_title_small {
+		height:60px;
+		padding:10px 20px 20px 20px;
+		transition: all 300ms ease-out;
+	}
+
+	.site_title h1 {
+		font-size:60px;
+		line-height:40px;
+		transition: all 300ms ease-in;
+	}
+
+	.site_title_small h1 {
+		font-size:40px;
+		transition: all 300ms ease-out;
+	}
+
+}

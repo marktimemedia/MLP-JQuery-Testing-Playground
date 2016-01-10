@@ -1,3 +1,5 @@
+@import url("css/scroll-pony.css");
+
 /* Global */
 
 @font-face {
@@ -86,29 +88,13 @@ header {
 		background:url("images/header.jpg") no-repeat right center;
 		background-size:cover;
 		color:#273773;
-		height:90px;
-		padding:10px 20px 20px 20px;
-		transition: all 300ms ease-in;
 		box-sizing:border-box;
 
 	}
 
-	.site_title_small {
-		height:0px;
-		padding:0 20px;
-		transition: all 300ms ease-out;
-	}
-
 	.site_title h1 {
 		color:#273773;
-		font-size:40px;
 		line-height:30px;
-		transition: all 300ms ease-in;
-	}
-
-	.site_title_small h1 {
-		font-size:20px;
-		transition: all 300ms ease-out;
 	}
 
 section.gallery {
@@ -353,6 +339,39 @@ section.gallery {
 
 }
 
+.gallery_flexbox_ul {
+	padding:0;
+	margin:0;
+}
+
+.gallery_flexbox_wrapper {
+	display:flex;
+	flex-wrap:wrap;
+	align-items:stretch;
+}
+
+
+.gallery_flexbox_li {
+	display:flex;
+	flex-direction:column;
+}
+
+.flexbox_image_thumb {
+	flex-grow:1;
+}
+
+
+.flexbox_image_thumb img {
+	width:100%;
+}
+
+
+.flexbox_image_caption {
+	width:100%;
+	text-align:center;
+	border-top:1px solid #eee;
+}
+
 
 @media only screen and (min-width: 488px) { /* 488px */
 	
@@ -365,32 +384,6 @@ section.gallery {
         width:44%;
         margin:2.5%;
     }
-
-	.site_title {
-		height:130px;
-		padding:40px 20px 30px 20px;
-		transition: all 300ms ease-in;
-
-	}
-
-	.site_title_small {
-		height:60px;
-		padding:10px 20px 20px 20px;
-		transition: all 300ms ease-out;
-	}
-
-	.site_title h1 {
-		font-size:60px;
-		line-height:40px;
-		transition: all 300ms ease-in;
-	}
-
-	.site_title_small h1 {
-		font-size:40px;
-		transition: all 300ms ease-out;
-	}
-
-
 
 }
 

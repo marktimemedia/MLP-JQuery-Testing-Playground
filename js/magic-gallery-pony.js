@@ -32,7 +32,7 @@
 			$(this).addClass("img-row-" + ((i%imgPerRow)+1)); // add descriptive class
 		});
 
-		console.log('expected images per row ' + imgPerRow);
+		// console.log('expected images per row ' + imgPerRow);
 
 	}
 

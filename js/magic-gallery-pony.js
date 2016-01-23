@@ -1,54 +1,72 @@
-(function($){
+(function( $ ){
 
 /* Magic Gallery Divs */
 
 	var imgPerRow;
 	var rowNumber;
 
-	var rowImgs = $('.gallery_image');
-	var tempRow = $('.gallery_dynamic_row');
-	var expandedExists = $('.expanded_gallery_single');
+	var rowImgString = '.gallery-image';
+	var tempRowClass = 'gallery-dynamic-row';
+	var existsClass = 'expanded-gallery-single'
 
-// assign images to rows
-	function calcImgsInRow() {
-		 imgPerRow = 0; // number of images per row 
-		 rowNumber = 1; // which row we are on
+	var tempRowString = '.' + tempRowClass;
+	var expandedExistsString = '.' + existsClass;
 
-		 $('.gallery_image').each(function(){
+	var $rowImgs = $(rowImgString);
+	var $tempRow = $(tempRowString);
+	var $expandedExists = $(expandedExistsString);
 
-		 	if($(this).prev().length > 0){
+	// assign images to rows
+    function calcImgsInRow() {
+         imgPerRow = 0; // number of images per row 
+         rowNumber = 1; // which row we are on
+         var $rowImgs = $(rowImgString);
 
-		 		if($(this).offset().top !== $(this).prev().offset().top) { // if this image is not next to previous image
-		 			return false;
-		 		}
-		 		imgPerRow++;  
+         $rowImgs.each(function(){
 
-	        } else {
-	        	imgPerRow++;
-	        }
-		 });
+            var $calcThis = $(this);
 
-		$('.gallery_image').each(function(i){
-			$(this).addClass("img-row-" + ((i%imgPerRow)+1)); // add descriptive class
-		});
+            if($calcThis.prev().length > 0){
 
-		// console.log('expected images per row ' + imgPerRow);
+                if($calcThis.offset().top !== $calcThis.prev().offset().top) { // if this image is not next to previous image
+                    return false;
+                }
+                imgPerRow++;  
 
-	}
+            } else {
+                imgPerRow++;
+            }
+         });
+
+        $rowImgs.each(function(i){
+
+            var $calcThis = $(this);
+
+            $calcThis.removeClass (function (index, css) {
+                return (css.match (/(^|\s)img-row-\S+/g) || []).join(' ');
+            });
+            $calcThis.addClass("img-row-" + ((i%imgPerRow)+1)); // add descriptive class
+          });
+
+        // console.log('expected images per row ' + imgPerRow);
+
+    }
 
 
-// add the wrapper div on click for dynamic rows
+	// add the wrapper div on click for dynamic rows
 	function wrapperRow() {
 
-		if (tempRow.length > 0) { // get rid of wrapper if it exists
-			$('.gallery_image').unwrap();
+		var $rowImgs = $(rowImgString);
+
+		if ($rowImgs.parent().is(tempRowString)) { // get rid of wrapper if it exists
+			$rowImgs.unwrap();
 		}
 
-		for(var i = 0; i < rowImgs.length; i+=imgPerRow) { // create the wrapper div based on images per row
-			rowImgs.slice(i, i+imgPerRow).wrapAll('<div class="gallery_dynamic_row"></div>'); 
+		for(var i = 0; i < $rowImgs.length; i+=imgPerRow) { // create the wrapper div based on images per row
+			$rowImgs.slice(i, i+imgPerRow).wrapAll('<div class="' + tempRowClass +'"></div>'); 
 		}
 
-		$('.gallery_dynamic_row').each(function(i){ // add data-row attribute to specify row number
+		$(tempRowString).each(function(i){ // add data-row attribute
 			$(this).attr('data-row', (i+1));
 		});
 
@@ -57,23 +75,22 @@
 
 // unwrap on resize
 	function unWrapRow() { 
-		$('.gallery_image').unwrap();
-		$('.gallery_image').wrapAll('<div class="gallery_dynamic_row"></div>'); 
+		var $rowImgs = $(rowImgString);
+
+		$rowImgs.unwrap();
+		$rowImgs.wrapAll('<div class="' + tempRowClass +'"></div>'); 
 
 	}
 
-
-//remove expanded content on resize so it doesn't jump to the bottom, possibly change this later to dynamically move itself instead
+	// remove expanded content on resize so it doesn't jump to the bottom, possibly change this later to dynamically move itself instead
 	function contentOnResize() {
-		var expandedExists = $('.expanded_gallery_single');
+		var $expandedExists = $(expandedExistsString);
 
-		if(expandedExists.length > 0) {
+		if($expandedExists.length > 0) {
 
-			expandedExists.remove();
+			$expandedExists.remove();
 		}
 	}
-
-
 
 // run immediately
 	calcImgsInRow();
@@ -86,7 +103,7 @@
 	$(window).load(function(){ // get window width on load and save
 		oldWidth = $(window).width();
 		
-		console.log('starting width= ' + oldWidth);
+		//console.log('starting width= ' + oldWidth);
 	});
 
 
@@ -107,72 +124,129 @@
 				contentOnResize(); 	// hide content
 				unWrapRow(); 		// kill wrapper and wrap all images together
 				
-				console.log('resized width=' + oldWidth + ' new width= '+ newWidth );
+				// console.log('resized width=' + oldWidth + ' new width= '+ newWidth );
 			}
 
 			oldWidth = newWidth;
 
-		}, 250);
+		}, 300);
 
 	});
 
 
-// run on image click
-
+// magic function for opening content on image click
 	var sampleRowNumberOld = 0; // original value for "old" row
+	
+	function do_the_magic($thisObj) {
 
-	$('.gallery_image').on('click', function() {
-
-	// unwraps row and adds again on click
-		wrapperRow(); 
+		var expandedExistsString = '.expanded-gallery-single';					// needs to be reset here
+		var contentString = '.gallery-full-content';							// the class of the DOM object that contains the content
 		
-		var $fullContent = $(this).children('.gallery_full_content').html(); 	// content in DOM associated with current image
-		var $wrapperDiv = $(this).parent('.gallery_dynamic_row'); 				// current image wrapper row
-		var uid = $(this).data('uid'); 											// current image data-uid attr
-		var expandedUid = $('.expanded_gallery_single').data('uid'); 			// current expanded div data-uid attr
+		var $fullContent = $thisObj.children(contentString).html(); 			// content in DOM associated with current image
+		var $wrapperDiv = $thisObj.parent(tempRowString); 						// current image wrapper row
+		var uid = $thisObj.data('uid'); 										// current image data-uid attr
+		var expandedUid = $(expandedExistsString).data('uid'); 					// current expanded div data-uid attr
 		var sampleRowNumber = $wrapperDiv.data('row'); 							// current image wrapper row data-row attr
 
 	// clicked the same image twice (close)
 		if(uid === expandedUid) { // image data-uid is the same as expanded data-uid
 
-			// console.log('step 2, close and change uid');
-
-			$( '.expanded_gallery_single' ).removeClass( 'animate_show' ).data( 'uid', 0 ); // hide and reset data-uid to 0
+			$( expandedExistsString ).removeClass( 'animate_show' ).data( 'uid', 0 ); // hide and reset data-uid to 0
+			// console.log('step 1');
 
 	// clicked a different image in same row (switch content)
 		} else if(0 < expandedUid && uid !== expandedUid && sampleRowNumber === sampleRowNumberOld) { // expanded data-uid has been set, and is not the same as current, and is in the same row
-			
-			// console.log('step 3, same row switch content');
 
-			$fullContent = $(this).children('.gallery_full_content').html(); // grab content associated with this image
-			$('.expanded_gallery_single').html($fullContent); // switch content
-			$( '.expanded_gallery_single' ).data( 'uid', uid ); // change data-uid to match current img
+			$fullContent = $thisObj.children(contentString).html(); // grab content associated with this image, right now a child of the object clicked
+			$(expandedExistsString).html($fullContent); // switch content
+			$( expandedExistsString ).data( 'uid', uid ); // change data-uid to match current img
+			// console.log('step 2');
 
 	// clicked a different image in a new row (open)
 		} else if( 0 < expandedUid && uid !== expandedUid && sampleRowNumber !== sampleRowNumberOld ) { // expanded data-uid has been set, and is not the same as current, and is in different row
-			
-			// console.log('step 4, remove, new row, open');
 
-			$( '.expanded_gallery_single' ).removeClass( 'animate_show' ).data( 'uid', 0 ); // hide and reset data-uid to 0
-			$('.expanded_gallery_single').remove(); // remove div + content to reset
-			$wrapperDiv.after('<div class="expanded_gallery_single" data-uid="' + uid + '">' + $fullContent + '</div>'); // create div and add content
-			$('.expanded_gallery_single').slideDown('slow'); // animate
-			$('.expanded_gallery_single').addClass('animate_show');
+			$( expandedExistsString ).slideUp().data( 'uid', 0 ); // hide and reset data-uid to 0
+			$(expandedExistsString).remove(); // remove div + content to reset
+			$wrapperDiv.after('<div class="' + existsClass +'" data-uid="' + uid + '">' + $fullContent + '</div>'); // create div and add content
+			$(expandedExistsString).slideDown('slow'); // animate
+			$(expandedExistsString).addClass('animate_show');
 			sampleRowNumberOld = sampleRowNumber; // set old row number to current row number
+			// console.log('step 3');
 
 	// clicked the image (open)
 		} else { // expandedUid = 0 or undefined, or all other circumstances 
-			
-			// console.log('step 1, remove, add, and open');
 
-			$('.expanded_gallery_single').remove(); // remove div + content to reset
-			$wrapperDiv.after('<div class="expanded_gallery_single" data-uid="' + uid + '">' + $fullContent + '</div>'); // create div and add content
-			$('.expanded_gallery_single').slideDown('slow'); // animate
-			$('.expanded_gallery_single').addClass('animate_show');
+			$(expandedExistsString).remove(); // remove div + content to reset
+			$wrapperDiv.after('<div class="'+ existsClass +'" data-uid="' + uid + '">' + $fullContent + '</div>'); // create div and add content
+			$(expandedExistsString).slideDown('slow'); // animate
+			$(expandedExistsString).addClass('animate_show');
 			sampleRowNumberOld = sampleRowNumber; // set old row number to current row number
+			// console.log('step 4');
 		}
 
+	}
+
+
+// Ajax for See More Work content in WordPress
+	// $count = 2;
+	// var $rowImgs = $(rowImgString);
+	// var gethref = $('#seeMoreWork').attr('href');
+	// var container = $('.work_container');
+	// var clicktrigger = $('#seeMoreWork');
+	// var totalposts = clicktrigger.attr('data-posts'); 
+	// var paged = 8; // how many posts per page (defined in php)
+	// var remainingposts = totalposts - paged; // how many posts remain after loading the next page
+
+	// clicktrigger.attr('href', gethref + $count); // create paged url with jquery
+
+
+	// clicktrigger.on('click', function(e){
+		
+	// 	e.preventDefault();
+
+	// 	var geturl = $(this).attr('href'); // url of selected button
+		
+
+	// 	$.ajax({
+	// 		url: geturl, 
+	// 		dataType: 'html',
+	// 		beforeSend: function(){
+	// 			container.addClass('tempload');
+	// 		},
+	// 		success: function(data){
+	// 			$rowImgs.unwrap(); // unwrap everything to make sure it loads inline
+	// 			$(expandedExistsString).remove(); // in case this content exists, get rid of it
+	// 			container.removeClass('tempload');
+	// 			var newload = $(data).find('#gallery-paged').html(); // find the div within the loaded data
+	// 			container.append(newload); // add div content to the end of the content in this div
+	// 			$rowImgs.wrapAll('<div class="gallery-dynamic-row"></div>'); // rewrap it all so it works
+	// 			calcImgsInRow();
+
+	// 			totalposts = remainingposts;
+
+	// 			$count++;
+
+	// 			if( remainingposts < paged ){ // if there is less than a page full of posts left, hide the more button
+	// 				clicktrigger.addClass('hide');
+	// 			}
+
+	// 			remainingposts = totalposts - paged; // reset totalposts to remainingposts
+
+	// 			clicktrigger.attr('href', gethref + $count); // new paged url
+
+	// 		}
+	// 	});
+
+
+	// });
+
+
+// run the magic function on click
+
+	$(document).on('click', rowImgString, function() { 
+		wrapperRow( tempRowClass );
+		do_the_magic($(this));
+		
 	});
 
-})(jQuery);
-
+})( jQuery );

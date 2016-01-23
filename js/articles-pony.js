@@ -3,12 +3,12 @@
 /* Read More - Articles */
 
 	$('.read_more').on('click', function() {
-		if(!$(this).hasClass('read_less')){
-			$(this).addClass('read_less').html('Read Less');
+		if(!$(this).hasClass('read-less')){
+			$(this).addClass('read-less').html('Read Less');
 		} else {
-			$(this).removeClass('read_less').html('Read More');
+			$(this).removeClass('read-less').html('Read More');
 		}
-		$(this).parent().siblings('.article_more').slideToggle();
+		$(this).parent().siblings('.article-more').slideToggle();
 	});
 
 

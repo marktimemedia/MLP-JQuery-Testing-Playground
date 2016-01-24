@@ -1,3 +1,23 @@
+/*
+Name: Magic Gallery
+Author: Marktime Media
+Author URI: http://marktimemedia.com
+Version: 0.1
+License: GPLv2
+ 
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2,
+ as published by the Free Software Foundation.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ GNU General Public License for more details.
+ 
+ The license for this software can likely be found here:
+ http://www.gnu.org/licenses/gpl-2.0.html
+*/
+
 (function( $ ){
 
 /* Magic Gallery Divs */
@@ -5,10 +25,11 @@
 	var imgPerRow;
 	var rowNumber;
 
-	var rowImgString = '.gallery-image';
+	var rowImgClass = 'gallery-image'; // must be a unique class, not used elsewhere on the page
 	var tempRowClass = 'gallery-dynamic-row';
 	var existsClass = 'expanded-gallery-single'
 
+	var rowImgString = '.' + rowImgClass;
 	var tempRowString = '.' + tempRowClass;
 	var expandedExistsString = '.' + existsClass;
 
@@ -75,14 +96,17 @@
 
 // unwrap on resize
 	function unWrapRow() { 
-		var $rowImgs = $(rowImgString);
+		// this will unwrap all elements with the class matching rowImgString
+		// so make sure this is a unique class not being used elsewhere
+		var $rowImgs = $(rowImgString); 
 
 		$rowImgs.unwrap();
 		$rowImgs.wrapAll('<div class="' + tempRowClass +'"></div>'); 
 
 	}
 
-	// remove expanded content on resize so it doesn't jump to the bottom, possibly change this later to dynamically move itself instead
+	// remove expanded content on resize so it doesn't jump to the bottom
+	// possibly change this later to dynamically move itself instead
 	function contentOnResize() {
 		var $expandedExists = $(expandedExistsString);
 
@@ -139,14 +163,14 @@
 	
 	function do_the_magic($thisObj) {
 
-		var expandedExistsString = '.expanded-gallery-single';					// needs to be reset here
-		var contentString = '.gallery-full-content';							// the class of the DOM object that contains the content
+		var expandedExistsString = '.expanded-gallery-single';				// needs to be reset here
+		var contentString = '.gallery-full-content';						// the class of the DOM object that contains the content
 		
-		var $fullContent = $thisObj.children(contentString).html(); 			// content in DOM associated with current image
-		var $wrapperDiv = $thisObj.parent(tempRowString); 						// current image wrapper row
-		var uid = $thisObj.data('uid'); 										// current image data-uid attr
-		var expandedUid = $(expandedExistsString).data('uid'); 					// current expanded div data-uid attr
-		var sampleRowNumber = $wrapperDiv.data('row'); 							// current image wrapper row data-row attr
+		var $fullContent = $thisObj.children(contentString).html(); 		// content in DOM associated with current image
+		var $wrapperDiv = $thisObj.parent(tempRowString); 					// current image wrapper row
+		var uid = $thisObj.data('uid'); 									// current image data-uid attr
+		var expandedUid = $(expandedExistsString).data('uid'); 				// current expanded div data-uid attr
+		var sampleRowNumber = $wrapperDiv.data('row'); 						// current image wrapper row data-row attr
 
 	// clicked the same image twice (close)
 		if(uid === expandedUid) { // image data-uid is the same as expanded data-uid

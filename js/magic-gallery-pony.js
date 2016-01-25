@@ -50,7 +50,7 @@ License: GPLv2
             $window = $(window),
             $document = $(document),
             $body = $("body"),
-            oldWidth,
+            windowWidth,
             sampleRowNumberOld = 0; // original value for "old" row
             
         // Run our initial setup and calculations immediately.
@@ -64,12 +64,12 @@ License: GPLv2
         function calculatePositions() {
             var newWidth = $(window).width();
             
-            if ( oldWidth !== newWidth ) {
+            if ( windowWidth !== newWidth ) {
                 calcImgsInRow();
                 contentOnResize();
                 unWrapRow();
-                oldWidth = newWidth;
-                //console.log('new width= ' + oldWidth);
+                windowWidth = newWidth;
+                //console.log('new width= ' + windowWidth);
             }
         
         }

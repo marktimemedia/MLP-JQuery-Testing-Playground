@@ -150,7 +150,7 @@ License: GPLv2
 
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function(){     // wait until we're done resizing to do these things
-                newWidth = $(window).width();         // get current window width
+                var newWidth = $(window).width();         // get current window width
 
                 if(oldWidth != newWidth){             // only do these things if width has changed (not height)
 

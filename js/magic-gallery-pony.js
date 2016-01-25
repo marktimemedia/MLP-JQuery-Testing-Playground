@@ -45,8 +45,8 @@ License: GPLv2
             expandedExistsSelector = '.' + existsClass,
             // Preserve our jQuery objects that we reuse rather than rebuilding them regularly.
             $rowImgs = $(rowImgSelector),
-            $tempRow = $(tempRowString),
-            $expandedExists = $(expandedExistsString),
+            $tempRow = $(tempRowSelector),
+            $expandedExists = $(expandedExistsSelector),
             $window = $(window),
             $document = $(document),
             $body = $("body"),
@@ -86,14 +86,14 @@ License: GPLv2
         });
         
         // run the magic function on click
-        $document.on('click', rowImgString, function() { 
+        $document.on('click', rowImgSelector, function() { 
             wrapperRow( tempRowClass );
             do_the_magic($(this));
         });
 
         // Ajax for See More Work content in WordPress
         // $count = 2;
-        // var $rowImgs = $(rowImgString);
+        // var $rowImgs = $(rowImgSelector);
         // var gethref = $('#seeMoreWork').attr('href');
         // var container = $('.work_container');
         // var clicktrigger = $('#seeMoreWork');
@@ -119,7 +119,7 @@ License: GPLv2
         //         },
         //         success: function(data){
         //             $rowImgs.unwrap(); // unwrap everything to make sure it loads inline
-        //             $(expandedExistsString).remove(); // in case this content exists, get rid of it
+        //             $(expandedExistsSelector).remove(); // in case this content exists, get rid of it
         //             container.removeClass('tempload');
         //             var newload = $(data).find('#gallery-paged').html(); // find the div within the loaded data
         //             container.append(newload); // add div content to the end of the content in this div
@@ -149,7 +149,7 @@ License: GPLv2
             
             imgPerRow = 0; // number of images per row 
             rowNumber = 1; // which row we are on
-            var $rowImgs = $(rowImgString);
+            var $rowImgs = $(rowImgSelector);
 
             $rowImgs.each(function(){
                 var $calcThis = $(this);
@@ -182,9 +182,9 @@ License: GPLv2
         // add the wrapper div on click for dynamic rows
         function wrapperRow() {
 
-            var $rowImgs = $(rowImgString);
+            var $rowImgs = $(rowImgSelector);
 
-            if ($rowImgs.parent().is(tempRowString)) { // get rid of wrapper if it exists
+            if ($rowImgs.parent().is(tempRowSelector)) { // get rid of wrapper if it exists
                 $rowImgs.unwrap();
             }
 
@@ -192,7 +192,7 @@ License: GPLv2
                 $rowImgs.slice(i, i+imgPerRow).wrapAll('<div class="' + tempRowClass +'"></div>'); 
             }
 
-            $(tempRowString).each(function(i){ // add data-row attribute
+            $(tempRowSelector).each(function(i){ // add data-row attribute
                 $(this).attr('data-row', (i+1));
             });
 
@@ -200,9 +200,9 @@ License: GPLv2
 
         // unwrap on resize
         function unWrapRow() { 
-            // this will unwrap all elements with the class matching rowImgString
+            // this will unwrap all elements with the class matching rowImgSelector
             // so make sure this is a unique class not being used elsewhere
-            var $rowImgs = $(rowImgString); 
+            var $rowImgs = $(rowImgSelector); 
 
             $rowImgs.unwrap();
             $rowImgs.wrapAll('<div class="' + tempRowClass +'"></div>'); 
@@ -212,7 +212,7 @@ License: GPLv2
         // remove expanded content on resize so it doesn't jump to the bottom
         // possibly change this later to dynamically move itself instead
         function contentOnResize() {
-            var $expandedExists = $(expandedExistsString);
+            var $expandedExists = $(expandedExistsSelector);
 
             if($expandedExists.length > 0) {
 
@@ -222,47 +222,47 @@ License: GPLv2
     
         function do_the_magic($thisObj) {
 
-            var expandedExistsString = '.expanded-gallery-single';                // needs to be reset here
+            var expandedExistsSelector = '.expanded-gallery-single';                // needs to be reset here
             var contentString = '.gallery-full-content';                        // the class of the DOM object that contains the content
         
             var $fullContent = $thisObj.children(contentString).html();         // content in DOM associated with current image
-            var $wrapperDiv = $thisObj.parent(tempRowString);                     // current image wrapper row
+            var $wrapperDiv = $thisObj.parent(tempRowSelector);                     // current image wrapper row
             var uid = $thisObj.data('uid');                                     // current image data-uid attr
-            var expandedUid = $(expandedExistsString).data('uid');                 // current expanded div data-uid attr
+            var expandedUid = $(expandedExistsSelector).data('uid');                 // current expanded div data-uid attr
             var sampleRowNumber = $wrapperDiv.data('row');                         // current image wrapper row data-row attr
 
         // clicked the same image twice (close)
             if(uid === expandedUid) { // image data-uid is the same as expanded data-uid
 
-                $( expandedExistsString ).removeClass( 'animate_show' ).data( 'uid', 0 ); // hide and reset data-uid to 0
+                $( expandedExistsSelector ).removeClass( 'animate_show' ).data( 'uid', 0 ); // hide and reset data-uid to 0
                 // console.log('step 1');
 
         // clicked a different image in same row (switch content)
             } else if(0 < expandedUid && uid !== expandedUid && sampleRowNumber === sampleRowNumberOld) { // expanded data-uid has been set, and is not the same as current, and is in the same row
 
                 $fullContent = $thisObj.children(contentString).html(); // grab content associated with this image, right now a child of the object clicked
-                $(expandedExistsString).html($fullContent); // switch content
-                $( expandedExistsString ).data( 'uid', uid ); // change data-uid to match current img
+                $(expandedExistsSelector).html($fullContent); // switch content
+                $( expandedExistsSelector ).data( 'uid', uid ); // change data-uid to match current img
                 // console.log('step 2');
 
         // clicked a different image in a new row (open)
             } else if( 0 < expandedUid && uid !== expandedUid && sampleRowNumber !== sampleRowNumberOld ) { // expanded data-uid has been set, and is not the same as current, and is in different row
 
-                $( expandedExistsString ).slideUp().data( 'uid', 0 ); // hide and reset data-uid to 0
-                $(expandedExistsString).remove(); // remove div + content to reset
+                $( expandedExistsSelector ).slideUp().data( 'uid', 0 ); // hide and reset data-uid to 0
+                $(expandedExistsSelector).remove(); // remove div + content to reset
                 $wrapperDiv.after('<div class="' + existsClass +'" data-uid="' + uid + '">' + $fullContent + '</div>'); // create div and add content
-                $(expandedExistsString).slideDown('slow'); // animate
-                $(expandedExistsString).addClass('animate_show');
+                $(expandedExistsSelector).slideDown('slow'); // animate
+                $(expandedExistsSelector).addClass('animate_show');
                 sampleRowNumberOld = sampleRowNumber; // set old row number to current row number
                 // console.log('step 3');
 
         // clicked the image (open)
             } else { // expandedUid = 0 or undefined, or all other circumstances 
 
-                $(expandedExistsString).remove(); // remove div + content to reset
+                $(expandedExistsSelector).remove(); // remove div + content to reset
                 $wrapperDiv.after('<div class="'+ existsClass +'" data-uid="' + uid + '">' + $fullContent + '</div>'); // create div and add content
-                $(expandedExistsString).slideDown('slow'); // animate
-                $(expandedExistsString).addClass('animate_show');
+                $(expandedExistsSelector).slideDown('slow'); // animate
+                $(expandedExistsSelector).addClass('animate_show');
                 sampleRowNumberOld = sampleRowNumber; // set old row number to current row number
                 // console.log('step 4');
             }

@@ -20,6 +20,11 @@ License: GPLv2
 
 (function( $ ){
     "use strict";
+    
+    if ( typeof $ === "undefined" ) {
+        // If jQuery isn't defined, we can exit rather than attempt to do anything against an interface that doesn't exist.
+        return;
+    }
 
 /* Magic Gallery Divs */
 

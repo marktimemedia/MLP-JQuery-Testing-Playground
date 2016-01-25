@@ -44,7 +44,7 @@ License: GPLv2
             tempRowSelector = '.' + tempRowClass,
             expandedExistsSelector = '.' + existsClass,
             // Preserve our jQuery objects that we reuse rather than rebuilding them regularly.
-            $rowImgs = $(rowImgSelector),
+            $rowImgs = $(rowImgSelector), // We should only need to recalculate the jQuery objects when we know they could have changed, don't recalculate more often for better performance.
             $tempRow = $(tempRowSelector),
             $expandedExists = $(expandedExistsSelector),
             $window = $(window),
@@ -76,75 +76,79 @@ License: GPLv2
 
         // assign images to rows
         function calcImgsInRow() {
-            
             imgPerRow = 0; // number of images per row 
-            rowNumber = 1; // which row we are on
-            var $rowImgs = $(rowImgSelector);
+            
+            if ( $rowImgs.length > 0 ) {
+                $rowImgs.each( setupRowImage );
+                // console.log('expected images per row ' + imgPerRow);
+            }
+        }
+        
+        function setupRowImage( index, element ) {
+            var $element = $(element),
+                $prevElement = $element.prev();
+                
+            // Reset on the first item
+            if ( index === 0 ) {
+                imgPerRow = 0;
+                rowNumber = 1;
+            }
 
-            $rowImgs.each(function(){
-                var $calcThis = $(this);
-
-                if($calcThis.prev().length > 0){
-
-                    if($calcThis.offset().top !== $calcThis.prev().offset().top) { // if this image is not next to previous image
-                        return false;
-                    }
-                    imgPerRow++;  
-                } else {
-                    imgPerRow++;
-                }
-            });
-
-            $rowImgs.each(function(i){
-
-                var $calcThis = $(this);
-
-                $calcThis.removeClass (function (index, css) {
-                    return (css.match (/(^|\s)img-row-\S+/g) || []).join(' ');
-                });
-                $calcThis.addClass("img-row-" + ((i%imgPerRow)+1)); // add descriptive class
-            });
-
-            // console.log('expected images per row ' + imgPerRow);
-
+            // If this element is not next to the previous image, skip ahead.
+            if ( $prevElement.length > 0 && $element.offset().top !== $prevElement.offset().top ) {
+                rowNumber ++;
+                imgPerRow = 0;
+            }
+            else {
+                imgPerRow++;
+            }
+            
+            setImgRowClass( $element, rowNumber );
+        }
+        
+        function setImgRowClass( $rowImage, rowNum ) {
+            $rowImage
+                .removeClass( removeImgRowClasses )
+                .addClass( "img-row-" + rowNum );
+        }
+        
+        function removeImgRowClasses( index, css ) {
+            return ( css.match( /(^|\s)img-row-\S+/g ) || []).join( ' ' );
         }
 
         // remove expanded content on resize so it doesn't jump to the bottom
         // possibly change this later to dynamically move itself instead
         function contentOnResize() {
-            var $expandedExists = $(expandedExistsSelector);
-
             if($expandedExists.length > 0) {
-
                 $expandedExists.remove();
+                $expandedExists = $(expandedExistsSelector );
             }
         }
 
         // add the wrapper div on click for dynamic rows
         function wrapperRow() {
-
-            var $rowImgs = $(rowImgSelector);
-
-            if ($rowImgs.parent().is(tempRowSelector)) { // get rid of wrapper if it exists
+            if ( $rowImgs.parent().is( tempRowSelector ) ) {
+                // get rid of wrapper if it exists
                 $rowImgs.unwrap();
             }
 
-            for(var i = 0; i < $rowImgs.length; i+=imgPerRow) { // create the wrapper div based on images per row
-                $rowImgs.slice(i, i+imgPerRow).wrapAll('<div class="' + tempRowClass +'"></div>'); 
+            for( var i = 0; i < $rowImgs.length; i += imgPerRow ) { // create the wrapper div based on images per row
+                $rowImgs.slice( i, i + imgPerRow).wrapAll( '<div class="' + tempRowClass +'"></div>' ); 
             }
 
-            $(tempRowSelector).each(function(i){ // add data-row attribute
-                $(this).attr('data-row', (i+1));
-            });
-
+            $( tempRowSelector ).each( setRowData );
+        }
+        
+        function setRowData( index, element ) {
+            // add data-row attribute
+            $(element).data('row', ( index + 1 ) );
         }
 
         // unwrap on resize
         function unWrapRow() { 
             // this will unwrap all elements with the class matching rowImgSelector
             // so make sure this is a unique class not being used elsewhere
-            var $rowImgs = $(rowImgSelector); 
-
+            
             $rowImgs.unwrap();
             $rowImgs.wrapAll('<div class="' + tempRowClass +'"></div>'); 
 

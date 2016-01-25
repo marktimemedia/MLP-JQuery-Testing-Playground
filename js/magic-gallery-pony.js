@@ -19,6 +19,7 @@ License: GPLv2
 */
 
 (function( $ ){
+    "use strict";
 
 /* Magic Gallery Divs */
 

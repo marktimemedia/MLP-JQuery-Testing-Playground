@@ -27,6 +27,7 @@ License: GPLv2
     }
     
     // Set up behaviors and leave the definitions for later, which makes this code a bit easier to read.
+    // By waiting until document ready, we can ensure that even if this script is loaded in the header, the selectors for body content will be in place before the code is executed.
     $(document).ready( initMagicGallery );
 
     // Function definitions

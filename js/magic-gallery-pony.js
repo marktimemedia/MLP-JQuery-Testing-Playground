@@ -34,7 +34,8 @@ License: GPLv2
     /* Magic Gallery Divs */
 
     function initMagicGallery() {
-        var imgPerRow,
+        var imgPerRow = 0,
+            currRowCount = 0,
             rowNumber,
             resizeTimer,
             rowImgClass = 'gallery-image', // must be a unique class, not used elsewhere on the page
@@ -50,6 +51,7 @@ License: GPLv2
             $window = $(window),
             $document = $(document),
             $body = $("body"),
+            $prevElement,
             windowWidth,
             sampleRowNumberOld = 0; // original value for "old" row
             
@@ -65,10 +67,11 @@ License: GPLv2
             var newWidth = $(window).width();
             
             if ( windowWidth !== newWidth ) {
-                calcImgsInRow();
-                contentOnResize();
-                unWrapRow();
                 windowWidth = newWidth;
+                $rowImgs.unwrap();
+                calcImgsInRow();
+                wrapperRow();
+                setExpanderPosition();
                 //console.log('new width= ' + windowWidth);
             }
         
@@ -85,25 +88,30 @@ License: GPLv2
         }
         
         function setupRowImage( index, element ) {
-            var $element = $(element),
-                $prevElement = $element.prev();
-                
+            var $element = $(element);
             // Reset on the first item
             if ( index === 0 ) {
-                imgPerRow = 0;
+                currRowCount = 1;
                 rowNumber = 1;
             }
-
             // If this element is not next to the previous image, skip ahead.
-            if ( $prevElement.length > 0 && $element.offset().top !== $prevElement.offset().top ) {
+            else if ( $prevElement && $prevElement.length > 0 && $element.offset().top !== $prevElement.offset().top ) {
                 rowNumber ++;
-                imgPerRow = 0;
+                currRowCount = 1;
             }
+            // This image is in the same row, so let's just increase the count.
             else {
-                imgPerRow++;
+                currRowCount++;
+            }
+            
+            // We're tracking these as two variables so that we can be sure we don't reset the count based on an overflow in the last row that contains fewer than the prior rows.
+            if ( currRowCount > imgPerRow ) {
+                imgPerRow = currRowCount;
             }
             
             setImgRowClass( $element, rowNumber );
+            
+            $prevElement = $element;
         }
         
         function setImgRowClass( $rowImage, rowNum ) {
@@ -116,15 +124,6 @@ License: GPLv2
             return ( css.match( /(^|\s)img-row-\S+/g ) || []).join( ' ' );
         }
 
-        // remove expanded content on resize so it doesn't jump to the bottom
-        // possibly change this later to dynamically move itself instead
-        function contentOnResize() {
-            if($expandedExists.length > 0) {
-                $expandedExists.remove();
-                $expandedExists = $(expandedExistsSelector );
-            }
-        }
-
         // add the wrapper div on click for dynamic rows
         function wrapperRow() {
             if ( $rowImgs.parent().is( tempRowSelector ) ) {
@@ -132,7 +131,8 @@ License: GPLv2
                 $rowImgs.unwrap();
             }
 
-            for( var i = 0; i < $rowImgs.length; i += imgPerRow ) { // create the wrapper div based on images per row
+            for( var i = 0; i < $rowImgs.length; i += imgPerRow ) {
+                // create the wrapper div based on images per row
                 $rowImgs.slice( i, i + imgPerRow).wrapAll( '<div class="' + tempRowClass +'"></div>' ); 
             }
 
@@ -141,7 +141,7 @@ License: GPLv2
         
         function setRowData( index, element ) {
             // add data-row attribute
-            $(element).data('row', ( index + 1 ) );
+            $( element ).data( 'row', ( index + 1 ) );
         }
 
         // unwrap on resize
@@ -169,8 +169,6 @@ License: GPLv2
         function rowImageClicked( clickEvent ) {
             var $clickedImg = $(this);
             
-            wrapperRow();
-            
             updateExpanderState( $clickedImg );
         }
 
@@ -197,8 +195,9 @@ License: GPLv2
             $expandedExists
                 .slideUp()
                 .removeClass( "animate_show" )
-                .data( 'uid', 0 )
-                .empty();
+                .data( 'uid', 0 );
+                
+            $expandedExists.expanderSrc = undefined;
         }
         
         function openExpander( $clickedImage ) {
@@ -206,10 +205,9 @@ License: GPLv2
                 contentSelector = ".gallery-full-content",
                 rowNumber = $wrapperDiv.data( "row" );
                 
-            if ( rowNumber !== sampleRowNumberOld ) {
-                $wrapperDiv.after( $expandedExists );
-                sampleRowNumberOld = rowNumber;
-            }
+            $expandedExists.expanderSrc = $clickedImage;
+                
+            setExpanderPosition();
             
             $expandedExists
                 .html( $clickedImage.children( contentSelector ).html() )
@@ -219,6 +217,22 @@ License: GPLv2
                 $expandedExists
                     .slideDown( 'slow' )
                     .addClass( 'animate_show' );
+            }
+        }
+        
+        function setExpanderPosition() {
+            var $wrapper, rowNum;
+            
+            if ( $expandedExists.expanderSrc ) {
+                $wrapper = $expandedExists.expanderSrc.parent( tempRowSelector );
+                rowNum = $wrapper.data( 'row' );
+                
+                if ( ! $expandedExists.prev() || $expandedExists.prev().data( 'row' ) !== rowNum ) {
+                    $expandedExists.remove();
+                    $wrapper.after( $expandedExists );
+                    sampleRowNumberOld = rowNum;
+                }
+                
             }
         }
         

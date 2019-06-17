@@ -2,7 +2,7 @@
 Name: Header Scroll
 Author: Marktime Media
 Author URI: http://marktimemedia.com
-Version: 0.1
+Version: 0.2
 License: GPLv2
  
  This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,10 @@ License: GPLv2
 /* Scroll Header */
 
 	var lastScrollTop = $(window).scrollTop(); // reset variable any time it reloads
-	//var siteHeader = $('.site-header');
-	var siteTitle = $('.site-title');
-	//var contentTop = $('#site-wrapper');
+	var siteHeader = $('.site-header'); // your header element
+	// var contentTop = $('#site-wrapper');
 	var changeDirection = -1; // base comparitive variable
+	var shrinkClass = 'site-header-small' // your small header class
 
 	$(window).on('scroll', (function(event) {
 		var scrollPosition = $(this).scrollTop();
@@ -35,11 +35,11 @@ License: GPLv2
 
 			if (scrollPosition > 180) { // once you get far enough down, shrink the header
 		    	
-		        siteTitle.addClass('site-title-small'); 
+		        siteHeader.addClass(shrinkClass);  
 
 		    } else { // bring it back up again when we get back to the top
 
-		    	siteTitle.removeClass('site-title-small');
+		    	siteHeader.removeClass(shrinkClass);
 		    }
 
 		} else { // this is mobile breakpoint or smaller
@@ -47,7 +47,7 @@ License: GPLv2
 			if (scrollPosition > 120 && scrollPosition > lastScrollTop) { // once you get far enough down, hide the header
 		    	
 		    	changeDirection = -1; // reset changeDirection
-		        siteTitle.addClass('site-title-small'); 
+		        siteHeader.addClass(shrinkClass); 
 
 		    } else { // bring it back up again if we scroll up at all
 
@@ -55,11 +55,11 @@ License: GPLv2
 		    		changeDirection = scrollPosition; // only set changeDirection once
 		    	}
 
-		    	console.log(changeDirection + ' ' + scrollPosition);
+		    	// console.log(changeDirection + ' ' + scrollPosition);
 
 		    	if ( scrollPosition < (changeDirection - 100) ) { // only add after you've scrolled up a bit
 
-			    	siteTitle.removeClass('site-title-small');
+			    	siteHeader.removeClass(shrinkClass);
 			    	changeDirection = -1; // reset changeDirection
 				}
 
